@@ -1,0 +1,316 @@
+<div class="page-wrap">
+  <div class="toolbar no-print">
+    <button mat-raised-button color="primary" (click)="printForm()">Print / PDF</button>
+    <button mat-raised-button class="btn-save" (click)="saveData()">Save</button>
+    <button mat-stroked-button class="btn-load" (click)="loadData()">Load</button>
+    <button mat-stroked-button class="btn-clear" (click)="clearForm()">Clear</button>
+  </div>
+
+  <mat-card class="screen-form">
+    <div class="form-header">
+      <div class="logo-row">
+        <div class="cfc-logo">
+          <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="24" cy="24" r="22" stroke="rgba(255,255,255,0.6)" stroke-width="2" fill="none"></circle>
+            <rect x="21" y="10" width="6" height="28" rx="1.5" fill="#fff"></rect>
+            <rect x="10" y="21" width="28" height="6" rx="1.5" fill="#fff"></rect>
+            <path d="M24 16 C20 12,14 14,12 18 C16 17,20 18,24 22" fill="#fff" opacity="0.35"></path>
+            <path d="M24 16 C28 12,34 14,36 18 C32 17,28 18,24 22" fill="#fff" opacity="0.35"></path>
+          </svg>
+        </div>
+        <div class="org-name">Couples for Christ</div>
+      </div>
+      <div class="form-title">Cash Advance / Reimbursement / Liquidation Form</div>
+    </div>
+
+    <div class="section">
+      <div class="section-title">Request Info</div>
+      <div class="field-group">
+        <div class="field-row">
+          <div class="field grow">
+            <label>Date</label>
+            <input type="date" [(ngModel)]="form.f_date" name="f_date" />
+          </div>
+          <div class="field shrink reqno-field">
+            <label>Request #</label>
+            <input type="text" [(ngModel)]="form.f_reqno" name="f_reqno" />
+          </div>
+        </div>
+        <div class="field">
+          <label>Purpose</label>
+          <input
+            type="text"
+            [(ngModel)]="form.f_purpose"
+            name="f_purpose"
+            placeholder="e.g. Airfare Regional TWR, Lakeland FL, Speaker"
+          />
+        </div>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-title">Charge To</div>
+      <div class="check-grid">
+        <label class="check-label" [class.checked]="form.c_evang">
+          <input type="checkbox" [(ngModel)]="form.c_evang" name="c_evang" /> Evangelization
+        </label>
+        <label class="check-label" [class.checked]="form.c_form">
+          <input type="checkbox" [(ngModel)]="form.c_form" name="c_form" /> Formation
+        </label>
+        <label class="check-label" [class.checked]="form.c_gov">
+          <input type="checkbox" [(ngModel)]="form.c_gov" name="c_gov" /> Governance
+        </label>
+        <label class="check-label" [class.checked]="form.c_miss">
+          <input type="checkbox" [(ngModel)]="form.c_miss" name="c_miss" /> Missionary Worker
+        </label>
+      </div>
+      <div class="others-row">
+        <label class="check-label" [class.checked]="form.c_other">
+          <input type="checkbox" [(ngModel)]="form.c_other" name="c_other" /> Others:
+        </label>
+        <input type="text" [(ngModel)]="form.f_other_spec" name="f_other_spec" placeholder="Please specify..." />
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-title">Payee and Requestor</div>
+      <div class="field-group">
+        <div class="field"><label>Payee</label><input type="text" [(ngModel)]="form.f_payee" name="f_payee" /></div>
+        <div class="field"><label>Requested By</label><input type="text" [(ngModel)]="form.f_reqby" name="f_reqby" /></div>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-title">Mailing Address</div>
+      <div class="field-group">
+        <div class="field"><label>Street Address</label><input type="text" [(ngModel)]="form.f_addr1" name="f_addr1" /></div>
+        <div class="field-row">
+          <div class="field grow"><label>City</label><input type="text" [(ngModel)]="form.f_city" name="f_city" /></div>
+          <div class="field shrink"><label>State</label><input type="text" maxlength="2" [(ngModel)]="form.f_state" name="f_state" /></div>
+          <div class="field shrink zip-field"><label>Zip Code</label><input type="text" maxlength="10" [(ngModel)]="form.f_zip" name="f_zip" /></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-title">Activity</div>
+      <div class="field-row">
+        <div class="field grow"><label>Activity</label><input type="text" [(ngModel)]="form.f_activity" name="f_activity" /></div>
+        <div class="field grow"><label>Location</label><input type="text" [(ngModel)]="form.f_location" name="f_location" /></div>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-title">Expense Items</div>
+      <div class="items-list">
+        <div class="expense-item" *ngFor="let item of form.items; let i = index">
+          <div class="expense-item-header">Item {{ i + 1 }}</div>
+          <div class="expense-item-body">
+            <div class="ei-date" data-label="Date">
+              <input type="date" [(ngModel)]="item.date" [name]="'item_date_' + i" />
+            </div>
+            <div class="ei-desc" data-label="Description">
+              <input type="text" placeholder="Description" [(ngModel)]="item.description" [name]="'item_desc_' + i" />
+            </div>
+            <div class="ei-amt" data-label="Amount ($)">
+              <input
+                type="number"
+                step="0.01"
+                min="0"
+                placeholder="0.00"
+                [(ngModel)]="item.amount"
+                [name]="'item_amt_' + i"
+                (input)="recalc()"
+              />
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="items-actions">
+        <button type="button" class="btn-add-item" (click)="addItem()">+ Add Item</button>
+        <button type="button" class="btn-remove-item" (click)="removeItem()" [disabled]="form.items.length <= 1">- Remove Last</button>
+        <span class="item-count-badge">{{ itemCountLabel }}</span>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-title">Totals</div>
+      <div class="totals-block">
+        <div class="total-row">
+          <span class="t-label">Total Expenses</span>
+          <div class="t-input-wrap"><span class="t-dollar">$</span><input type="text" readonly [value]="totalExpenses" /></div>
+        </div>
+        <div class="total-row">
+          <span class="t-label">Less Cash Advance</span>
+          <div class="t-input-wrap">
+            <span class="t-dollar">$</span>
+            <input
+              type="number"
+              step="0.01"
+              min="0"
+              placeholder="0.00"
+              [(ngModel)]="form.cash_advance"
+              name="cash_advance"
+              (input)="recalc()"
+            />
+          </div>
+        </div>
+        <div class="total-row">
+          <span class="t-label">Amount Due to (from) Undersigned</span>
+          <div class="t-input-wrap"><span class="t-dollar">$</span><input type="text" readonly [value]="amountDue" /></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-title">Approvers</div>
+      <div class="field-group">
+        <div class="field-row">
+          <div class="field grow"><label>Approver 1 - Name / Signature</label><input type="text" [(ngModel)]="form.approver1_name" name="approver1_name" /></div>
+          <div class="field approver-date"><label>Date</label><input type="date" [(ngModel)]="form.approver1_date" name="approver1_date" /></div>
+        </div>
+        <div class="field-row">
+          <div class="field grow"><label>Approver 2 - Name / Signature</label><input type="text" [(ngModel)]="form.approver2_name" name="approver2_name" /></div>
+          <div class="field approver-date"><label>Date</label><input type="date" [(ngModel)]="form.approver2_date" name="approver2_date" /></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="accounting-header">FOR ACCOUNTING USE ONLY</div>
+    <div class="section">
+      <div class="field-group">
+        <div class="field"><label>Received By / Date</label><input type="text" [(ngModel)]="form.acc_received" name="acc_received" /></div>
+        <div class="field-row">
+          <div class="field grow"><label>Check #</label><input type="text" [(ngModel)]="form.acc_check" name="acc_check" /></div>
+          <div class="field mailed-date"><label>Date Mailed</label><input type="date" [(ngModel)]="form.acc_mailed" name="acc_mailed" /></div>
+        </div>
+        <div class="field"><label>Remarks</label><input type="text" [(ngModel)]="form.acc_remarks" name="acc_remarks" /></div>
+      </div>
+    </div>
+  </mat-card>
+
+  <div class="print-form" id="print-form">
+    <div class="pf-wrap">
+      <div class="pf-header">
+        <div class="pf-logo-row">
+          <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="24" cy="24" r="22" stroke="#000" stroke-width="2" fill="none"></circle>
+            <rect x="21" y="10" width="6" height="28" rx="1" fill="#000"></rect>
+            <rect x="10" y="21" width="28" height="6" rx="1" fill="#000"></rect>
+            <path d="M24 16 C20 12,14 14,12 18 C16 17,20 18,24 22" fill="#000" opacity="0.3"></path>
+            <path d="M24 16 C28 12,34 14,36 18 C32 17,28 18,24 22" fill="#000" opacity="0.3"></path>
+          </svg>
+          <div class="pf-orgname">Couples for Christ</div>
+        </div>
+        <div class="pf-subtitle">Cash Advance / Reimbursement / Liquidation Form</div>
+      </div>
+
+      <table class="pf-table">
+        <tr>
+          <td class="pf-lbl">Date</td>
+          <td class="pf-val print-wide">{{ formatDate(form.f_date) }}</td>
+          <td class="pf-lbl print-right">Request No.</td>
+          <td class="pf-val">{{ form.f_reqno }}</td>
+        </tr>
+        <tr>
+          <td class="pf-lbl">Purpose</td>
+          <td class="pf-val" colspan="3">{{ form.f_purpose }}</td>
+        </tr>
+        <tr>
+          <td class="pf-lbl" rowspan="2">Charge to</td>
+          <td class="pf-val" colspan="3">
+            <div class="pf-charge-row">
+              <span class="pf-cb-item"><span class="pf-cb-box">{{ form.c_evang ? '✓' : '' }}</span> Evangelization</span>
+              <span class="pf-cb-item"><span class="pf-cb-box">{{ form.c_form ? '✓' : '' }}</span> Formation</span>
+              <span class="pf-cb-item"><span class="pf-cb-box">{{ form.c_gov ? '✓' : '' }}</span> Governance</span>
+              <span class="pf-cb-item"><span class="pf-cb-box">{{ form.c_miss ? '✓' : '' }}</span> Missionary Worker</span>
+            </div>
+          </td>
+        </tr>
+        <tr>
+          <td class="pf-val" colspan="3">
+            <div class="pf-charge-row">
+              <span class="pf-cb-item"><span class="pf-cb-box">{{ form.c_other ? '✓' : '' }}</span> Others</span>
+              <span>{{ form.f_other_spec }}</span>
+            </div>
+          </td>
+        </tr>
+        <tr><td class="pf-lbl">Payee</td><td class="pf-val" colspan="3">{{ form.f_payee }}</td></tr>
+        <tr><td class="pf-lbl">Requested by</td><td class="pf-val" colspan="3">{{ form.f_reqby }}</td></tr>
+        <tr><td class="pf-lbl">Mailing address</td><td class="pf-val" colspan="3">{{ form.f_addr1 }}</td></tr>
+        <tr>
+          <td class="pf-lbl"></td>
+          <td class="pf-val">{{ form.f_city }}</td>
+          <td class="pf-val">State: {{ form.f_state }}</td>
+          <td class="pf-val">Zip Code: {{ form.f_zip }}</td>
+        </tr>
+        <tr>
+          <td class="pf-lbl">Activity</td>
+          <td class="pf-val">{{ form.f_activity }}</td>
+          <td class="pf-lbl print-right">Location:</td>
+          <td class="pf-val">{{ form.f_location }}</td>
+        </tr>
+        <tr>
+          <td class="pf-items-th">Date</td>
+          <td class="pf-items-th" colspan="2">Description</td>
+          <td class="pf-items-th pf-amt-cell">Amount</td>
+        </tr>
+        <tr *ngFor="let item of printItems">
+          <td class="pf-val">{{ formatDate(item.date) }}</td>
+          <td class="pf-val" colspan="2">{{ item.description }}</td>
+          <td class="pf-val pf-amt-cell">{{ item.amount !== null ? '$ ' + formatMoney(item.amount) : '' }}</td>
+        </tr>
+        <tr>
+          <td colspan="2" class="no-border"></td>
+          <td class="pf-val pf-total-lbl">Total Expenses</td>
+          <td class="pf-val pf-amt-cell">$ {{ totalExpenses }}</td>
+        </tr>
+        <tr>
+          <td colspan="2" class="no-border"></td>
+          <td class="pf-val pf-total-lbl">Less Cash Advance</td>
+          <td class="pf-val pf-amt-cell">$ {{ formatMoney(form.cash_advance) }}</td>
+        </tr>
+        <tr>
+          <td colspan="2" class="no-border"></td>
+          <td class="pf-val pf-total-lbl">Amount due to (from) undersigned</td>
+          <td class="pf-val pf-amt-cell">$ {{ amountDue }}</td>
+        </tr>
+      </table>
+
+      <table class="pf-table top-gap">
+        <tr>
+          <td class="pf-lbl print-small">Approver:</td>
+          <td class="pf-val print-wide">{{ form.approver1_name }}</td>
+          <td class="pf-lbl print-right">Date:</td>
+          <td class="pf-val">{{ formatDate(form.approver1_date) }}</td>
+        </tr>
+        <tr>
+          <td class="pf-lbl print-small">Approver:</td>
+          <td class="pf-val">{{ form.approver2_name }}</td>
+          <td class="pf-lbl print-right">Date:</td>
+          <td class="pf-val">{{ formatDate(form.approver2_date) }}</td>
+        </tr>
+      </table>
+
+      <div class="top-gap">
+        <div class="pf-acct-header">FOR ACCOUNTING USE ONLY</div>
+        <table class="pf-table">
+          <tr>
+            <td class="pf-lbl">Received by / Date:</td>
+            <td class="pf-val" colspan="3">{{ form.acc_received }}</td>
+          </tr>
+          <tr>
+            <td class="pf-lbl">Check #</td>
+            <td class="pf-val print-wide">{{ form.acc_check }}</td>
+            <td class="pf-lbl print-right">Date Mailed:</td>
+            <td class="pf-val">{{ formatDate(form.acc_mailed) }}</td>
+          </tr>
+          <tr>
+            <td class="pf-lbl">Remarks</td>
+            <td class="pf-val" colspan="3">{{ form.acc_remarks }}</td>
+          </tr>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>

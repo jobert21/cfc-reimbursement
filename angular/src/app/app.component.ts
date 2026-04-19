@@ -1,0 +1,223 @@
+import { HttpClient } from '@angular/common/http';
+import { Component } from '@angular/core';
+import { MatDialog } from '@angular/material/dialog';
+import { MatSnackBar } from '@angular/material/snack-bar';
+import { FormRecord } from './payee-search-dialog.component';
+import { PayeeSearchDialogComponent } from './payee-search-dialog.component';
+
+interface FormState extends Omit<FormRecord, '_id'> {}
+
+@Component({
+  selector: 'app-root',
+  templateUrl: './app.component.html',
+  styleUrls: ['./app.component.css']
+})
+export class AppComponent {
+  readonly apiBaseUrl = '/api/forms';
+  form = this.createEmptyForm();
+  totalExpenses = '0.00';
+  amountDue = '0.00';
+  currentRecordId: string | null = null;
+
+  get itemCountLabel(): string {
+    return this.form.items.length === 1 ? '1 item' : `${this.form.items.length} items`;
+  }
+
+  get printItems(): Array<{ date: string; description: string; amount: number | null }> {
+    return this.form.items.filter((item) => {
+      const hasDate = Boolean(item.date && item.date.trim());
+      const hasDescription = Boolean(item.description && item.description.trim());
+      const hasAmount = item.amount !== null && item.amount !== undefined && `${item.amount}`.trim() !== '';
+      return hasDate || hasDescription || hasAmount;
+    });
+  }
+
+  constructor(
+    private readonly http: HttpClient,
+    private readonly dialog: MatDialog,
+    private readonly snackBar: MatSnackBar,
+  ) {}
+
+  recalc(): void {
+    const total = this.form.items.reduce((sum, item) => sum + (Number(item.amount) || 0), 0);
+    const advance = Number(this.form.cash_advance) || 0;
+
+    this.totalExpenses = total.toFixed(2);
+    this.amountDue = (total - advance).toFixed(2);
+  }
+
+  saveData(): void {
+    this.recalc();
+
+    const base = this.createEmptyForm();
+    const payload: FormState = {
+      ...base,
+      ...this.form,
+      items: this.form.items.map((item) => ({
+        date: item.date,
+        description: item.description,
+        amount: item.amount,
+      })),
+      total_expenses: this.totalExpenses,
+      amount_due: this.amountDue,
+    };
+
+    const isUpdate = Boolean(this.currentRecordId);
+    const request = this.currentRecordId
+      ? this.http.put<FormRecord>(`${this.apiBaseUrl}/${this.currentRecordId}`, payload)
+      : this.http.post<FormRecord>(this.apiBaseUrl, payload);
+
+    request.subscribe({
+      next: (savedRecord) => {
+        this.currentRecordId = savedRecord._id ?? this.currentRecordId;
+        this.showMessage(isUpdate ? 'Form updated.' : 'Form saved.');
+      },
+      error: () => this.showMessage('Failed to save form.'),
+    });
+  }
+
+  loadData(): void {
+    const dialogRef = this.dialog.open(PayeeSearchDialogComponent, {
+      width: '700px',
+      data: {
+        apiBaseUrl: this.apiBaseUrl,
+        mode: 'load',
+      },
+    });
+
+    dialogRef.afterClosed().subscribe((record) => {
+      if (!record) {
+        return;
+      }
+      this.populateForm(record);
+      this.showMessage('Form loaded.');
+    });
+  }
+
+  printForm(): void {
+    this.recalc();
+    setTimeout(() => window.print(), 100);
+  }
+
+  clearForm(): void {
+    this.form = this.createEmptyForm();
+    this.currentRecordId = null;
+    this.recalc();
+  }
+
+  addItem(): void {
+    this.form.items.push({ date: '', description: '', amount: null });
+  }
+
+  removeItem(): void {
+    if (this.form.items.length <= 1) {
+      return;
+    }
+    this.form.items.pop();
+    this.recalc();
+  }
+
+  formatDate(value: string): string {
+    if (!value) {
+      return '';
+    }
+    const [year, month, day] = value.split('-');
+    if (!year || !month || !day) {
+      return value;
+    }
+    return `${month}/${day}/${year}`;
+  }
+
+  formatMoney(value: number | string | null | undefined): string {
+    const amount = Number(value);
+    return Number.isFinite(amount) ? amount.toFixed(2) : '0.00';
+  }
+
+  private populateForm(record: FormRecord): void {
+    const existingItems = Array.isArray(record.items) ? record.items : [];
+    const base = this.createEmptyForm();
+
+    this.form = {
+      ...base,
+      f_date: record.f_date ?? base.f_date,
+      f_reqno: record.f_reqno ?? base.f_reqno,
+      f_purpose: record.f_purpose ?? base.f_purpose,
+      c_evang: Boolean(record.c_evang),
+      c_form: Boolean(record.c_form),
+      c_gov: Boolean(record.c_gov),
+      c_miss: Boolean(record.c_miss),
+      c_other: Boolean(record.c_other),
+      f_other_spec: record.f_other_spec ?? base.f_other_spec,
+      f_payee: record.f_payee ?? base.f_payee,
+      f_reqby: record.f_reqby ?? base.f_reqby,
+      f_addr1: record.f_addr1 ?? base.f_addr1,
+      f_city: record.f_city ?? base.f_city,
+      f_state: record.f_state ?? base.f_state,
+      f_zip: record.f_zip ?? base.f_zip,
+      f_activity: record.f_activity ?? base.f_activity,
+      f_location: record.f_location ?? base.f_location,
+      cash_advance: record.cash_advance ?? null,
+      approver1_name: record.approver1_name ?? base.approver1_name,
+      approver1_date: record.approver1_date ?? base.approver1_date,
+      approver2_name: record.approver2_name ?? base.approver2_name,
+      approver2_date: record.approver2_date ?? base.approver2_date,
+      acc_received: record.acc_received ?? base.acc_received,
+      acc_check: record.acc_check ?? base.acc_check,
+      acc_mailed: record.acc_mailed ?? base.acc_mailed,
+      acc_remarks: record.acc_remarks ?? base.acc_remarks,
+      items: existingItems.length > 0
+        ? existingItems.map((item) => ({
+            date: item?.date ?? '',
+            description: item?.description ?? '',
+            amount: item?.amount ?? null,
+          }))
+        : [{ date: '', description: '', amount: null }],
+    };
+
+    this.currentRecordId = record._id ?? null;
+
+    this.recalc();
+  }
+
+  private createEmptyForm(): FormState {
+    return {
+      f_date: '',
+      f_reqno: '',
+      f_purpose: '',
+      c_evang: false,
+      c_form: false,
+      c_gov: false,
+      c_miss: false,
+      c_other: false,
+      f_other_spec: '',
+      f_payee: '',
+      f_reqby: '',
+      f_addr1: '',
+      f_city: '',
+      f_state: '',
+      f_zip: '',
+      f_activity: '',
+      f_location: '',
+      cash_advance: null,
+      approver1_name: '',
+      approver1_date: '',
+      approver2_name: '',
+      approver2_date: '',
+      acc_received: '',
+      acc_check: '',
+      acc_mailed: '',
+      acc_remarks: '',
+      items: [{
+        date: '',
+        description: '',
+        amount: null,
+      }],
+      total_expenses: '0.00',
+      amount_due: '0.00',
+    };
+  }
+
+  private showMessage(message: string): void {
+    this.snackBar.open(message, 'Close', { duration: 2200 });
+  }
+}

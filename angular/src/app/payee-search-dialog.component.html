@@ -1,0 +1,32 @@
+<h2 mat-dialog-title>{{ title }}</h2>
+
+<mat-dialog-content>
+  <div class="search-row">
+    <mat-form-field appearance="outline" class="payee-field">
+      <mat-label>Payee name</mat-label>
+      <input matInput [(ngModel)]="query" (keyup.enter)="search()" />
+    </mat-form-field>
+
+    <button mat-raised-button color="primary" (click)="search()">Search</button>
+  </div>
+
+  <div class="status-row" *ngIf="loading">
+    <mat-spinner diameter="26"></mat-spinner>
+    <span>Searching...</span>
+  </div>
+
+  <mat-list *ngIf="!loading && records.length > 0">
+    <button mat-list-item *ngFor="let record of records" (click)="selectRecord(record)">
+      <span matListItemTitle>{{ record.f_payee || '(No payee)' }}</span>
+      <span matListItemLine>
+        Date: {{ record.f_date || '-' }} | Request #: {{ record.f_reqno || '-' }}
+      </span>
+    </button>
+  </mat-list>
+
+  <p class="empty" *ngIf="!loading && searched && records.length === 0">No payee records found.</p>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button mat-button mat-dialog-close>Cancel</button>
+</mat-dialog-actions>

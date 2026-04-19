@@ -1,0 +1,16 @@
+services:
+  nodejs-api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: cfc-nodejs-api
+    environment:
+      PORT: 3001
+    ports:
+      - "3001:3001"
+    volumes:
+      - nodejs_api_data:/app/data
+    restart: unless-stopped
+
+volumes:
+  nodejs_api_data:

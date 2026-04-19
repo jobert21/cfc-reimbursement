@@ -1,0 +1,17 @@
+.DS_Store
+
+# Dependencies
+node_modules/
+angular/node_modules/
+nodejs-api/node_modules/
+
+# Build outputs
+angular/dist/
+angular/.angular/
+
+# Runtime data
+nodejs-api/data/
+
+# Logs
+*.log
+npm-debug.log*

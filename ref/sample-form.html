@@ -1,0 +1,1029 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>CFC Cash Advance / Reimbursement / Liquidation Form</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=IM+Fell+English:ital@0;1&family=Source+Sans+3:wght@400;600;700&display=swap');
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --blue: #1a3a6b;
+  --blue-light: #e8eef8;
+  --border: #c8c8c8;
+  --bg: #edeae3;
+  --label: #555;
+  --input-bg: #fafafa;
+  --radius: 8px;
+}
+
+/* ═══════════════════════════════════════
+   SCREEN STYLES (mobile-first card layout)
+═══════════════════════════════════════ */
+body {
+  font-family: 'Source Sans 3', sans-serif;
+  font-size: 14px;
+  background: var(--bg);
+  min-height: 100vh;
+  padding: 12px;
+  color: #111;
+}
+
+.toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  justify-content: center;
+  margin-bottom: 14px;
+}
+.btn {
+  flex: 1 1 auto;
+  min-width: 110px;
+  max-width: 170px;
+  padding: 10px 14px;
+  border: none;
+  border-radius: var(--radius);
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+}
+.btn:active { opacity: 0.75; }
+.btn-primary { background: var(--blue); color: #fff; }
+.btn-save    { background: #1e7a3e; color: #fff; }
+.btn-load    { background: #fff; color: var(--blue); border: 1.5px solid var(--blue); }
+.btn-clear   { background: #fff; color: #b91c1c; border: 1.5px solid #b91c1c; }
+
+/* Screen form wrapper */
+.screen-form {
+  background: #fff;
+  border-radius: var(--radius);
+  box-shadow: 0 2px 16px rgba(0,0,0,0.10);
+  max-width: 680px;
+  margin: 0 auto;
+  overflow: hidden;
+}
+
+.form-header {
+  background: var(--blue);
+  color: #fff;
+  text-align: center;
+  padding: 18px 16px 14px;
+}
+.logo-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  margin-bottom: 4px;
+}
+.cfc-logo svg { width: 40px; height: 40px; }
+.org-name {
+  font-family: 'IM Fell English', serif;
+  font-size: clamp(18px, 5vw, 26px);
+  letter-spacing: 2px;
+  text-transform: uppercase;
+}
+.form-title {
+  font-size: clamp(11px, 3vw, 13px);
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  opacity: 0.85;
+}
+
+.section {
+  padding: 14px 16px;
+  border-bottom: 1px solid var(--border);
+}
+.section:last-child { border-bottom: none; }
+.section-title {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--blue);
+  margin-bottom: 10px;
+  padding-bottom: 4px;
+  border-bottom: 2px solid var(--blue-light);
+}
+
+.field-group { display: flex; flex-direction: column; gap: 10px; }
+.field-row { display: flex; gap: 10px; flex-wrap: wrap; }
+.field-row .field       { flex: 1 1 120px; }
+.field-row .field.grow  { flex: 2 1 180px; }
+.field-row .field.shrink{ flex: 0 1 80px; min-width: 60px; }
+
+.field { display: flex; flex-direction: column; gap: 3px; }
+.field label {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--label);
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+}
+.field input {
+  width: 100%;
+  padding: 9px 10px;
+  border: 1.5px solid var(--border);
+  border-radius: 6px;
+  font-family: inherit;
+  font-size: 14px;
+  background: var(--input-bg);
+  color: #111;
+  -webkit-appearance: none;
+}
+.field input:focus { border-color: var(--blue); background: #f0f5ff; outline: none; }
+.field input[readonly] {
+  background: var(--blue-light);
+  color: var(--blue);
+  font-weight: 700;
+  border-color: #b0c0e0;
+}
+
+.check-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  gap: 8px;
+}
+.check-label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 9px 10px;
+  border: 1.5px solid var(--border);
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 13px;
+  user-select: none;
+}
+.check-label input[type="checkbox"] {
+  width: 16px; height: 16px;
+  accent-color: var(--blue);
+  flex-shrink: 0;
+  cursor: pointer;
+}
+.check-label.checked { border-color: var(--blue); background: var(--blue-light); }
+
+.others-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 8px;
+  flex-wrap: wrap;
+}
+.others-row .check-label { flex-shrink: 0; }
+.others-row input[type="text"] {
+  flex: 1 1 120px;
+  min-width: 0;
+  padding: 9px 10px;
+  border: 1.5px solid var(--border);
+  border-radius: 6px;
+  font-family: inherit;
+  font-size: 14px;
+  background: var(--input-bg);
+}
+.others-row input[type="text"]:focus { border-color: var(--blue); background: #f0f5ff; outline: none; }
+
+/* Expense items */
+.items-list { display: flex; flex-direction: column; gap: 8px; }
+.expense-item { border: 1.5px solid var(--border); border-radius: 8px; overflow: hidden; }
+.expense-item-header {
+  background: #f5f5f5;
+  padding: 5px 10px;
+  font-size: 11px;
+  font-weight: 700;
+  color: #666;
+  letter-spacing: 0.5px;
+}
+.expense-item-body {
+  display: grid;
+  grid-template-columns: 130px 1fr 100px;
+}
+.expense-item-body > div { border-right: 1px solid var(--border); }
+.expense-item-body > div:last-child { border-right: none; }
+.expense-item-body input {
+  width: 100%;
+  padding: 8px 10px;
+  border: none;
+  font-family: inherit;
+  font-size: 13px;
+  background: transparent;
+  color: #111;
+  display: block;
+}
+.expense-item-body input:focus { background: #f0f5ff; outline: none; }
+.ei-amt input { text-align: right; }
+
+@media (max-width: 460px) {
+  .expense-item-body { grid-template-columns: 1fr; }
+  .expense-item-body > div { border-right: none; border-bottom: 1px solid var(--border); }
+  .expense-item-body > div:last-child { border-bottom: none; }
+  .ei-amt input { text-align: left; }
+  .expense-item-body > div::before {
+    content: attr(data-label);
+    display: block;
+    font-size: 10px;
+    font-weight: 700;
+    color: var(--label);
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+    padding: 5px 10px 0;
+  }
+}
+
+/* Totals */
+.totals-block {
+  background: var(--blue-light);
+  border-radius: 8px;
+  border: 1.5px solid #b0c0e0;
+  overflow: hidden;
+}
+.total-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 9px 14px;
+  border-bottom: 1px solid #c8d6ee;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.total-row:last-child { border-bottom: none; }
+.total-row .t-label { font-size: 13px; font-weight: 600; color: #333; flex: 1 1 140px; }
+.total-row .t-input-wrap { display: flex; align-items: center; gap: 4px; }
+.total-row .t-dollar { font-weight: 700; color: var(--blue); }
+.total-row input {
+  width: 110px;
+  padding: 7px 8px;
+  border: 1.5px solid #b0c0e0;
+  border-radius: 6px;
+  font-family: inherit;
+  font-size: 14px;
+  text-align: right;
+  background: #fff;
+  color: #111;
+  -webkit-appearance: none;
+}
+.total-row input[readonly] { background: var(--blue-light); color: var(--blue); font-weight: 700; border-color: #90aad4; }
+.total-row input:focus { border-color: var(--blue); outline: none; }
+
+.accounting-header {
+  background: #333;
+  color: #fff;
+  text-align: center;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  padding: 7px;
+}
+
+/* Add / Remove item buttons */
+.items-actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 10px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+.btn-add-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 9px 16px;
+  background: var(--blue);
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+}
+.btn-add-item:active { opacity: 0.75; }
+.btn-remove-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 9px 16px;
+  background: #fff;
+  color: #b91c1c;
+  border: 1.5px solid #b91c1c;
+  border-radius: 6px;
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+}
+.btn-remove-item:active { opacity: 0.75; }
+.btn-remove-item:disabled { opacity: 0.35; cursor: not-allowed; }
+.item-count-badge {
+  margin-left: auto;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--label);
+  background: var(--blue-light);
+  border-radius: 20px;
+  padding: 4px 12px;
+}
+
+/* ═══════════════════════════════════════
+   PRINT STYLES — classic table layout
+   matching the original paper form
+═══════════════════════════════════════ */
+@media print {
+  * { box-sizing: border-box; }
+
+  body {
+    background: #fff;
+    padding: 0;
+    margin: 0;
+    font-family: Arial, sans-serif;
+    font-size: 10pt;
+    color: #000;
+  }
+
+  .toolbar { display: none !important; }
+  .screen-form { display: none !important; }
+  .print-form { display: block !important; }
+}
+
+/* Print form hidden on screen */
+.print-form { display: none; }
+
+/* ── Print form styles (always defined, only visible on print) ── */
+.pf-wrap {
+  width: 100%;
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 18px 20px;
+  font-family: Arial, sans-serif;
+  font-size: 9.5pt;
+  color: #000;
+}
+
+/* Header */
+.pf-header {
+  text-align: center;
+  margin-bottom: 8px;
+}
+.pf-logo-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin-bottom: 2px;
+}
+.pf-logo-row svg { width: 36px; height: 36px; }
+.pf-orgname {
+  font-family: 'IM Fell English', Georgia, serif;
+  font-size: 20pt;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: #000;
+}
+.pf-subtitle {
+  font-size: 11pt;
+  font-weight: bold;
+  margin-top: 2px;
+}
+
+/* Main table */
+.pf-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 6px;
+}
+.pf-table td {
+  border: 1px solid #333;
+  padding: 4px 6px;
+  vertical-align: middle;
+}
+.pf-lbl {
+  background: #f0f0f0;
+  font-weight: bold;
+  white-space: nowrap;
+  font-size: 8.5pt;
+  width: 100px;
+}
+.pf-val {
+  font-size: 9.5pt;
+  min-height: 18px;
+}
+.pf-val-line {
+  border-bottom: 1px solid #555;
+  min-height: 16px;
+  display: inline-block;
+  width: 100%;
+  padding-bottom: 1px;
+}
+
+/* Charge row */
+.pf-charge-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: center;
+}
+.pf-cb-item {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 9pt;
+}
+.pf-cb-box {
+  width: 11px;
+  height: 11px;
+  border: 1px solid #333;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  font-size: 9pt;
+  font-weight: bold;
+}
+
+/* Items table header */
+.pf-items-th {
+  background: #e8e8e8;
+  font-weight: bold;
+  font-size: 8.5pt;
+}
+.pf-amt-cell {
+  text-align: right;
+  white-space: nowrap;
+  width: 90px;
+}
+.pf-dollar { display: inline-block; min-width: 12px; }
+
+/* Totals */
+.pf-total-lbl { text-align: right; font-weight: bold; font-size: 9pt; }
+
+/* Accounting section */
+.pf-acct-header {
+  text-align: center;
+  font-weight: bold;
+  font-size: 8.5pt;
+  background: #ddd;
+  padding: 3px;
+  border: 1px solid #333;
+  border-bottom: none;
+  letter-spacing: 1px;
+}
+</style>
+</head>
+<body>
+
+<!-- ═══════════════════════════════
+     SCREEN VERSION (mobile cards)
+═══════════════════════════════ -->
+<div class="toolbar no-print">
+  <button class="btn btn-primary" onclick="printForm()">🖨 Print / PDF</button>
+  <button class="btn btn-save"    onclick="saveData()">💾 Save</button>
+  <button class="btn btn-load"    onclick="loadData(false)">📂 Load</button>
+  <button class="btn btn-clear"   onclick="clearForm()">🗑 Clear</button>
+</div>
+
+<div class="screen-form">
+
+  <div class="form-header">
+    <div class="logo-row">
+      <div class="cfc-logo">
+        <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="24" cy="24" r="22" stroke="rgba(255,255,255,0.6)" stroke-width="2" fill="none"/>
+          <rect x="21" y="10" width="6" height="28" rx="1.5" fill="#fff"/>
+          <rect x="10" y="21" width="28" height="6" rx="1.5" fill="#fff"/>
+          <path d="M24 16 C20 12,14 14,12 18 C16 17,20 18,24 22" fill="#fff" opacity="0.35"/>
+          <path d="M24 16 C28 12,34 14,36 18 C32 17,28 18,24 22" fill="#fff" opacity="0.35"/>
+        </svg>
+      </div>
+      <div class="org-name">Couples for Christ</div>
+    </div>
+    <div class="form-title">Cash Advance / Reimbursement / Liquidation Form</div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Request Info</div>
+    <div class="field-group">
+      <div class="field-row">
+        <div class="field grow">
+          <label>Date</label>
+          <input type="date" id="f_date" />
+        </div>
+        <div class="field shrink" style="min-width:90px;">
+          <label>Request No.</label>
+          <input type="text" id="f_reqno" />
+        </div>
+      </div>
+      <div class="field">
+        <label>Purpose</label>
+        <input type="text" id="f_purpose" placeholder="e.g. Airfare Regional TWR, Lakeland FL, Speaker" />
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Charge To</div>
+    <div class="check-grid">
+      <label class="check-label" id="lbl_evang">
+        <input type="checkbox" id="c_evang" onchange="toggleCheck(this,'lbl_evang')" /> Evangelization
+      </label>
+      <label class="check-label" id="lbl_form">
+        <input type="checkbox" id="c_form" onchange="toggleCheck(this,'lbl_form')" /> Formation
+      </label>
+      <label class="check-label" id="lbl_gov">
+        <input type="checkbox" id="c_gov" onchange="toggleCheck(this,'lbl_gov')" /> Governance
+      </label>
+      <label class="check-label" id="lbl_miss">
+        <input type="checkbox" id="c_miss" onchange="toggleCheck(this,'lbl_miss')" /> Missionary Worker
+      </label>
+    </div>
+    <div class="others-row">
+      <label class="check-label" id="lbl_other">
+        <input type="checkbox" id="c_other" onchange="toggleCheck(this,'lbl_other')" /> Others:
+      </label>
+      <input type="text" id="f_other_spec" placeholder="Please specify..." />
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Payee &amp; Requestor</div>
+    <div class="field-group">
+      <div class="field"><label>Payee</label><input type="text" id="f_payee" /></div>
+      <div class="field"><label>Requested By</label><input type="text" id="f_reqby" /></div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Mailing Address</div>
+    <div class="field-group">
+      <div class="field"><label>Street Address</label><input type="text" id="f_addr1" /></div>
+      <div class="field-row">
+        <div class="field grow"><label>City</label><input type="text" id="f_city" /></div>
+        <div class="field shrink" style="min-width:60px;"><label>State</label><input type="text" id="f_state" maxlength="2" placeholder="CA" /></div>
+        <div class="field shrink" style="min-width:90px;"><label>Zip Code</label><input type="text" id="f_zip" maxlength="10" /></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Activity</div>
+    <div class="field-row">
+      <div class="field grow"><label>Activity</label><input type="text" id="f_activity" /></div>
+      <div class="field grow"><label>Location</label><input type="text" id="f_location" /></div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Expense Items</div>
+    <div class="items-list" id="items-list"></div>
+    <div class="items-actions">
+      <button class="btn-add-item" onclick="addItem()">＋ Add Item</button>
+      <button class="btn-remove-item" id="btn-remove" onclick="removeItem()" disabled>− Remove Last</button>
+      <span class="item-count-badge" id="item-count">1 item</span>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Totals</div>
+    <div class="totals-block">
+      <div class="total-row">
+        <span class="t-label">Total Expenses</span>
+        <div class="t-input-wrap"><span class="t-dollar">$</span><input type="text" id="total_expenses" readonly value="0.00" /></div>
+      </div>
+      <div class="total-row">
+        <span class="t-label">Less Cash Advance</span>
+        <div class="t-input-wrap"><span class="t-dollar">$</span><input type="number" id="cash_advance" step="0.01" min="0" placeholder="0.00" oninput="recalc()" /></div>
+      </div>
+      <div class="total-row">
+        <span class="t-label">Amount Due to (from) Undersigned</span>
+        <div class="t-input-wrap"><span class="t-dollar">$</span><input type="text" id="amount_due" readonly value="0.00" /></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Approvers</div>
+    <div class="field-group">
+      <div class="field-row">
+        <div class="field grow"><label>Approver 1 — Name / Signature</label><input type="text" id="approver1_name" /></div>
+        <div class="field shrink" style="min-width:130px;"><label>Date</label><input type="date" id="approver1_date" /></div>
+      </div>
+      <div class="field-row">
+        <div class="field grow"><label>Approver 2 — Name / Signature</label><input type="text" id="approver2_name" /></div>
+        <div class="field shrink" style="min-width:130px;"><label>Date</label><input type="date" id="approver2_date" /></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="accounting-header">FOR ACCOUNTING USE ONLY</div>
+  <div class="section">
+    <div class="field-group">
+      <div class="field"><label>Received By / Date</label><input type="text" id="acc_received" /></div>
+      <div class="field-row">
+        <div class="field grow"><label>Check #</label><input type="text" id="acc_check" /></div>
+        <div class="field shrink" style="min-width:140px;"><label>Date Mailed</label><input type="date" id="acc_mailed" /></div>
+      </div>
+      <div class="field"><label>Remarks</label><input type="text" id="acc_remarks" /></div>
+    </div>
+  </div>
+
+</div><!-- end screen-form -->
+
+
+<!-- ═══════════════════════════════
+     PRINT VERSION (classic table)
+     Hidden on screen, shown on print
+═══════════════════════════════ -->
+<div class="print-form" id="print-form">
+<div class="pf-wrap">
+
+  <!-- Header -->
+  <div class="pf-header">
+    <div class="pf-logo-row">
+      <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="24" cy="24" r="22" stroke="#000" stroke-width="2" fill="none"/>
+        <rect x="21" y="10" width="6" height="28" rx="1" fill="#000"/>
+        <rect x="10" y="21" width="28" height="6" rx="1" fill="#000"/>
+        <path d="M24 16 C20 12,14 14,12 18 C16 17,20 18,24 22" fill="#000" opacity="0.3"/>
+        <path d="M24 16 C28 12,34 14,36 18 C32 17,28 18,24 22" fill="#000" opacity="0.3"/>
+      </svg>
+      <div class="pf-orgname">Couples for Christ</div>
+    </div>
+    <div class="pf-subtitle">Cash Advance / Reimbursement / Liquidation Form</div>
+  </div>
+
+  <table class="pf-table">
+
+    <!-- Date + Request No -->
+    <tr>
+      <td class="pf-lbl">Date</td>
+      <td class="pf-val" style="width:55%;"><span class="pf-val-line" id="pv_date"></span></td>
+      <td class="pf-lbl" style="text-align:right; width:80px;">Request No.</td>
+      <td class="pf-val"><span class="pf-val-line" id="pv_reqno"></span></td>
+    </tr>
+
+    <!-- Purpose -->
+    <tr>
+      <td class="pf-lbl">Purpose</td>
+      <td class="pf-val" colspan="3"><span class="pf-val-line" id="pv_purpose"></span></td>
+    </tr>
+
+    <!-- Charge To row 1 -->
+    <tr>
+      <td class="pf-lbl" rowspan="2">Charge to</td>
+      <td class="pf-val" colspan="3">
+        <div class="pf-charge-row">
+          <span class="pf-cb-item"><span class="pf-cb-box" id="pv_c_evang"></span> Evangelization</span>
+          <span class="pf-cb-item"><span class="pf-cb-box" id="pv_c_form"></span> Formation</span>
+          <span class="pf-cb-item"><span class="pf-cb-box" id="pv_c_gov"></span> Governance</span>
+          <span class="pf-cb-item"><span class="pf-cb-box" id="pv_c_miss"></span> Missionary Worker</span>
+        </div>
+      </td>
+    </tr>
+    <!-- Charge To row 2: Others -->
+    <tr>
+      <td class="pf-val" colspan="3">
+        <div class="pf-charge-row">
+          <span class="pf-cb-item"><span class="pf-cb-box" id="pv_c_other"></span> Others (Please specify)</span>
+          <span class="pf-val-line" id="pv_other_spec" style="flex:1; min-width:80px;"></span>
+        </div>
+      </td>
+    </tr>
+
+    <!-- Payee -->
+    <tr>
+      <td class="pf-lbl">Payee</td>
+      <td class="pf-val" colspan="3"><span class="pf-val-line" id="pv_payee"></span></td>
+    </tr>
+
+    <!-- Requested by -->
+    <tr>
+      <td class="pf-lbl">Requested by</td>
+      <td class="pf-val" colspan="3"><span class="pf-val-line" id="pv_reqby"></span></td>
+    </tr>
+
+    <!-- Mailing address -->
+    <tr>
+      <td class="pf-lbl">Mailing address</td>
+      <td class="pf-val" colspan="3"><span class="pf-val-line" id="pv_addr1"></span></td>
+    </tr>
+    <tr>
+      <td class="pf-lbl"></td>
+      <td class="pf-val"><span class="pf-val-line" id="pv_city"></span></td>
+      <td class="pf-val" style="white-space:nowrap;">State: <span class="pf-val-line" id="pv_state" style="width:30px; display:inline-block;"></span></td>
+      <td class="pf-val" style="white-space:nowrap;">Zip Code: <span class="pf-val-line" id="pv_zip" style="width:60px; display:inline-block;"></span></td>
+    </tr>
+
+    <!-- Activity / Location -->
+    <tr>
+      <td class="pf-lbl">Activity</td>
+      <td class="pf-val"><span class="pf-val-line" id="pv_activity"></span></td>
+      <td class="pf-lbl" style="text-align:right;">Location:</td>
+      <td class="pf-val"><span class="pf-val-line" id="pv_location"></span></td>
+    </tr>
+
+    <!-- Items header -->
+    <tr>
+      <td class="pf-items-th" style="width:100px;">Date</td>
+      <td class="pf-items-th" colspan="2">Description</td>
+      <td class="pf-items-th pf-amt-cell">Amount</td>
+    </tr>
+
+    <!-- Dynamic item rows populated by JS on print -->
+    <tbody id="pf-items-tbody"></tbody>
+
+    <!-- Total Expenses -->
+    <tr>
+      <td colspan="2" style="border:none;"></td>
+      <td class="pf-val pf-total-lbl">Total Expenses</td>
+      <td class="pf-val pf-amt-cell">$ <span id="pv_total_expenses"></span></td>
+    </tr>
+
+    <!-- Less Cash Advance -->
+    <tr>
+      <td colspan="2" style="border:none;"></td>
+      <td class="pf-val pf-total-lbl">Less Cash Advance</td>
+      <td class="pf-val pf-amt-cell">$ <span id="pv_cash_advance"></span></td>
+    </tr>
+
+    <!-- Amount Due -->
+    <tr>
+      <td colspan="2" style="border:none;"></td>
+      <td class="pf-val pf-total-lbl">Amount due to (from) undersigned</td>
+      <td class="pf-val pf-amt-cell">$ <span id="pv_amount_due"></span></td>
+    </tr>
+
+  </table>
+
+  <!-- Approvers -->
+  <table class="pf-table" style="margin-top:6px;">
+    <tr>
+      <td class="pf-lbl" style="width:70px;">Approver:</td>
+      <td class="pf-val" style="width:55%;"><span class="pf-val-line" id="pv_approver1_name"></span></td>
+      <td class="pf-lbl" style="text-align:right; width:40px;">Date:</td>
+      <td class="pf-val"><span class="pf-val-line" id="pv_approver1_date"></span></td>
+    </tr>
+    <tr>
+      <td class="pf-lbl">Approver:</td>
+      <td class="pf-val"><span class="pf-val-line" id="pv_approver2_name"></span></td>
+      <td class="pf-lbl" style="text-align:right;">Date:</td>
+      <td class="pf-val"><span class="pf-val-line" id="pv_approver2_date"></span></td>
+    </tr>
+  </table>
+
+  <!-- Accounting -->
+  <div style="margin-top:6px;">
+    <div class="pf-acct-header">FOR ACCOUNTING USE ONLY</div>
+    <table class="pf-table">
+      <tr>
+        <td class="pf-lbl" style="width:110px;">Received by / Date:</td>
+        <td class="pf-val" colspan="3"><span class="pf-val-line" id="pv_acc_received"></span></td>
+      </tr>
+      <tr>
+        <td class="pf-lbl">Check #</td>
+        <td class="pf-val" style="width:55%;"><span class="pf-val-line" id="pv_acc_check"></span></td>
+        <td class="pf-lbl" style="text-align:right;">Date Mailed:</td>
+        <td class="pf-val"><span class="pf-val-line" id="pv_acc_mailed"></span></td>
+      </tr>
+      <tr>
+        <td class="pf-lbl">Remarks</td>
+        <td class="pf-val" colspan="3"><span class="pf-val-line" id="pv_acc_remarks"></span></td>
+      </tr>
+    </table>
+  </div>
+
+</div><!-- end pf-wrap -->
+</div><!-- end print-form -->
+
+
+<script>
+let itemCount = 0; // tracks how many items currently exist
+
+function fmtDate(val) {
+  if (!val) return '';
+  const [y,m,d] = val.split('-');
+  if (!y||!m||!d) return val;
+  return `${m}/${d}/${y}`;
+}
+
+function addItem(dateVal, descVal, amtVal) {
+  itemCount++;
+  const list = document.getElementById('items-list');
+  const div = document.createElement('div');
+  div.className = 'expense-item';
+  div.id = `expense-item-${itemCount}`;
+  div.innerHTML = `
+    <div class="expense-item-header">Item ${itemCount}</div>
+    <div class="expense-item-body">
+      <div class="ei-date" data-label="Date"><input type="date" id="item_date_${itemCount}" value="${dateVal||''}" /></div>
+      <div class="ei-desc" data-label="Description"><input type="text" id="item_desc_${itemCount}" placeholder="Description" value="${descVal||''}" /></div>
+      <div class="ei-amt" data-label="Amount ($)"><input type="number" id="item_amt_${itemCount}" step="0.01" min="0" placeholder="0.00" value="${amtVal||''}" oninput="recalc()" /></div>
+    </div>`;
+  list.appendChild(div);
+  updateItemUI();
+  recalc();
+}
+
+function removeItem() {
+  if (itemCount <= 1) return;
+  const el = document.getElementById(`expense-item-${itemCount}`);
+  if (el) el.remove();
+  itemCount--;
+  updateItemUI();
+  recalc();
+}
+
+function updateItemUI() {
+  document.getElementById('btn-remove').disabled = itemCount <= 1;
+  const badge = document.getElementById('item-count');
+  badge.textContent = itemCount === 1 ? '1 item' : `${itemCount} items`;
+}
+
+function recalc() {
+  let total = 0;
+  for (let i = 1; i <= itemCount; i++) {
+    total += parseFloat(document.getElementById('item_amt_'+i)?.value) || 0;
+  }
+  document.getElementById('total_expenses').value = total.toFixed(2);
+  const adv = parseFloat(document.getElementById('cash_advance').value) || 0;
+  document.getElementById('amount_due').value = (total - adv).toFixed(2);
+}
+
+function toggleCheck(cb, lblId) {
+  document.getElementById(lblId).classList.toggle('checked', cb.checked);
+}
+
+function syncPrintForm() {
+  const map = {
+    'f_date':         'pv_date',
+    'f_reqno':        'pv_reqno',
+    'f_purpose':      'pv_purpose',
+    'f_other_spec':   'pv_other_spec',
+    'f_payee':        'pv_payee',
+    'f_reqby':        'pv_reqby',
+    'f_addr1':        'pv_addr1',
+    'f_city':         'pv_city',
+    'f_state':        'pv_state',
+    'f_zip':          'pv_zip',
+    'f_activity':     'pv_activity',
+    'f_location':     'pv_location',
+    'cash_advance':   'pv_cash_advance',
+    'total_expenses': 'pv_total_expenses',
+    'amount_due':     'pv_amount_due',
+    'approver1_name': 'pv_approver1_name',
+    'approver1_date': 'pv_approver1_date',
+    'approver2_name': 'pv_approver2_name',
+    'approver2_date': 'pv_approver2_date',
+    'acc_received':   'pv_acc_received',
+    'acc_check':      'pv_acc_check',
+    'acc_mailed':     'pv_acc_mailed',
+    'acc_remarks':    'pv_acc_remarks',
+  };
+  Object.entries(map).forEach(([srcId, dstId]) => {
+    const src = document.getElementById(srcId);
+    const dst = document.getElementById(dstId);
+    if (!src || !dst) return;
+    dst.textContent = src.type === 'date' ? fmtDate(src.value) : src.value;
+  });
+
+  const checks = { 'c_evang':'pv_c_evang','c_form':'pv_c_form','c_gov':'pv_c_gov','c_miss':'pv_c_miss','c_other':'pv_c_other' };
+  Object.entries(checks).forEach(([srcId, dstId]) => {
+    const cb = document.getElementById(srcId);
+    const box = document.getElementById(dstId);
+    if (cb && box) box.textContent = cb.checked ? '✓' : '';
+  });
+
+  // Build print item rows dynamically
+  const tbody = document.getElementById('pf-items-tbody');
+  tbody.innerHTML = '';
+  const MAX_PRINT_ROWS = 10;
+  for (let i = 1; i <= MAX_PRINT_ROWS; i++) {
+    const dateEl = document.getElementById(`item_date_${i}`);
+    const descEl = document.getElementById(`item_desc_${i}`);
+    const amtEl  = document.getElementById(`item_amt_${i}`);
+    const dateVal = dateEl ? fmtDate(dateEl.value) : '';
+    const descVal = descEl ? descEl.value : '';
+    const amtVal  = amtEl && amtEl.value ? parseFloat(amtEl.value).toFixed(2) : '';
+    tbody.innerHTML += `<tr>
+      <td class="pf-val" style="height:20px;">${dateVal}</td>
+      <td class="pf-val" colspan="2">${descVal}</td>
+      <td class="pf-val pf-amt-cell">${amtVal ? '$ '+amtVal : ''}</td>
+    </tr>`;
+  }
+}
+
+function getAllFieldIds() {
+  const base = [
+    'f_date','f_reqno','f_purpose',
+    'c_evang','c_form','c_gov','c_miss','c_other','f_other_spec',
+    'f_payee','f_reqby',
+    'f_addr1','f_city','f_state','f_zip',
+    'f_activity','f_location',
+    'cash_advance',
+    'approver1_name','approver1_date',
+    'approver2_name','approver2_date',
+    'acc_received','acc_check','acc_mailed','acc_remarks'
+  ];
+  for (let i = 1; i <= itemCount; i++) {
+    base.push(`item_date_${i}`,`item_desc_${i}`,`item_amt_${i}`);
+  }
+  return base;
+}
+
+function saveData() {
+  const data = { _itemCount: itemCount };
+  getAllFieldIds().forEach(id => {
+    const el = document.getElementById(id);
+    if (!el) return;
+    data[id] = el.type === 'checkbox' ? el.checked : el.value;
+  });
+  localStorage.setItem('cfc_form_data', JSON.stringify(data));
+  showToast('✅ Saved!');
+}
+
+function loadData(silent) {
+  const raw = localStorage.getItem('cfc_form_data');
+  if (!raw) { if (!silent) showToast('⚠️ No saved data found.'); return false; }
+  const data = JSON.parse(raw);
+
+  // Restore non-item fields first
+  Object.keys(data).forEach(id => {
+    if (id === '_itemCount' || id.startsWith('item_')) return;
+    const el = document.getElementById(id);
+    if (!el) return;
+    if (el.type === 'checkbox') {
+      el.checked = data[id];
+      const lbl = el.closest('.check-label');
+      if (lbl) lbl.classList.toggle('checked', data[id]);
+    } else {
+      el.value = data[id];
+    }
+  });
+
+  // Restore items
+  const savedCount = data._itemCount || 1;
+  // Reset items list
+  document.getElementById('items-list').innerHTML = '';
+  itemCount = 0;
+  for (let i = 1; i <= savedCount; i++) {
+    addItem(data[`item_date_${i}`], data[`item_desc_${i}`], data[`item_amt_${i}`]);
+  }
+
+  recalc();
+  if (!silent) showToast('📂 Data loaded!');
+  return true;
+}
+
+function clearForm() {
+  if (!confirm('Clear all fields?')) return;
+  // Clear non-item fields
+  ['f_date','f_reqno','f_purpose','c_evang','c_form','c_gov','c_miss','c_other','f_other_spec',
+   'f_payee','f_reqby','f_addr1','f_city','f_state','f_zip','f_activity','f_location',
+   'cash_advance','approver1_name','approver1_date','approver2_name','approver2_date',
+   'acc_received','acc_check','acc_mailed','acc_remarks'].forEach(id => {
+    const el = document.getElementById(id);
+    if (!el) return;
+    el.type === 'checkbox' ? el.checked = false : el.value = '';
+  });
+  document.querySelectorAll('.check-label').forEach(l => l.classList.remove('checked'));
+  // Reset to 1 item
+  document.getElementById('items-list').innerHTML = '';
+  itemCount = 0;
+  addItem();
+  recalc();
+}
+
+function printForm() {
+  syncPrintForm();
+  window.print();
+}
+
+function showToast(msg) {
+  const t = document.createElement('div');
+  t.textContent = msg;
+  Object.assign(t.style, {
+    position:'fixed', bottom:'20px', left:'50%', transform:'translateX(-50%)',
+    background:'#1a3a6b', color:'#fff', padding:'10px 22px',
+    borderRadius:'20px', fontSize:'14px', fontWeight:'600',
+    zIndex:'9999', boxShadow:'0 4px 12px rgba(0,0,0,0.25)', opacity:'1',
+    transition:'opacity 0.4s'
+  });
+  document.body.appendChild(t);
+  setTimeout(() => { t.style.opacity='0'; setTimeout(() => t.remove(), 400); }, 2200);
+}
+
+window.addEventListener('load', () => {
+  const raw = localStorage.getItem('cfc_form_data');
+  if (raw && confirm('Saved form data found. Load it?')) {
+    loadData(true);
+  } else {
+    addItem(); // start with 1 blank item
+  }
+  recalc();
+});
+</script>
+
+</body>
+</html>
