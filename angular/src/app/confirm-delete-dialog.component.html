@@ -1,0 +1,14 @@
+<h2 mat-dialog-title>Delete record?</h2>
+
+<mat-dialog-content>
+  <p class="confirm-copy">
+    This will permanently delete the record for
+    <strong>{{ data.payee || 'this payee' }}</strong>.
+  </p>
+  <p class="confirm-meta">Request #: <strong>{{ data.requestNumber || '-' }}</strong></p>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button mat-button (click)="cancel()">Cancel</button>
+  <button mat-raised-button color="warn" (click)="confirm()">Delete</button>
+</mat-dialog-actions>

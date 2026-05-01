@@ -10,13 +10,7 @@
     <div class="form-header">
       <div class="logo-row">
         <div class="cfc-logo">
-          <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <circle cx="24" cy="24" r="22" stroke="rgba(255,255,255,0.6)" stroke-width="2" fill="none"></circle>
-            <rect x="21" y="10" width="6" height="28" rx="1.5" fill="#fff"></rect>
-            <rect x="10" y="21" width="28" height="6" rx="1.5" fill="#fff"></rect>
-            <path d="M24 16 C20 12,14 14,12 18 C16 17,20 18,24 22" fill="#fff" opacity="0.35"></path>
-            <path d="M24 16 C28 12,34 14,36 18 C32 17,28 18,24 22" fill="#fff" opacity="0.35"></path>
-          </svg>
+          <img src="assets/cfc-logo-white.png" alt="Couples for Christ logo" />
         </div>
         <div class="org-name">Couples for Christ</div>
       </div>
@@ -28,7 +22,7 @@
       <div class="field-group">
         <div class="field-row">
           <div class="field grow">
-            <label>Date</label>
+            <label>Date <span class="required-mark">*</span></label>
             <input type="date" [(ngModel)]="form.f_date" name="f_date" />
           </div>
           <!-- <div class="field shrink reqno-field">
@@ -49,7 +43,7 @@
     </div>
 
     <div class="section">
-      <div class="section-title">Charge To</div>
+      <div class="section-title">Charge To <span class="required-mark">*</span></div>
       <div class="check-grid">
         <label class="check-label" [class.checked]="form.c_evang">
           <input type="checkbox" [(ngModel)]="form.c_evang" name="c_evang" /> Evangelization
@@ -57,26 +51,35 @@
         <label class="check-label" [class.checked]="form.c_form">
           <input type="checkbox" [(ngModel)]="form.c_form" name="c_form" /> Formation
         </label>
-        <label class="check-label" [class.checked]="form.c_gov">
-          <input type="checkbox" [(ngModel)]="form.c_gov" name="c_gov" /> Governance
+        <label class="check-label" [class.checked]="form.c_church_donation">
+          <input type="checkbox" [(ngModel)]="form.c_church_donation" name="c_church_donation" /> Church Donation
         </label>
         <label class="check-label" [class.checked]="form.c_miss">
           <input type="checkbox" [(ngModel)]="form.c_miss" name="c_miss" /> Missionary Worker
         </label>
+        <label class="check-label" [class.checked]="form.c_priest_stipend">
+          <input type="checkbox" [(ngModel)]="form.c_priest_stipend" name="c_priest_stipend" /> Priest Stipend
+        </label>
+        <label class="check-label" [class.checked]="form.c_bereavement">
+          <input type="checkbox" [(ngModel)]="form.c_bereavement" name="c_bereavement" /> Bereavement
+        </label>
+        <label class="check-label check-label-full" [class.checked]="form.c_natl_remittance">
+          <input type="checkbox" [(ngModel)]="form.c_natl_remittance" name="c_natl_remittance" /> Nat'l Remittance (Tithes, FFO, ANCOP)
+        </label>
       </div>
       <div class="others-row">
         <label class="check-label" [class.checked]="form.c_other">
-          <input type="checkbox" [(ngModel)]="form.c_other" name="c_other" /> Others:
+          <input type="checkbox" [(ngModel)]="form.c_other" name="c_other" /> Others: Notes
         </label>
-        <input type="text" [(ngModel)]="form.f_other_spec" name="f_other_spec" placeholder="Please specify..." />
+        <input type="text" [(ngModel)]="form.f_other_spec" name="f_other_spec" placeholder="Notes..." />
       </div>
     </div>
 
     <div class="section">
       <div class="section-title">Payee and Requestor</div>
       <div class="field-group">
-        <div class="field"><label>Payee</label><input type="text" [(ngModel)]="form.f_payee" name="f_payee" /></div>
-        <div class="field"><label>Requested By</label><input type="text" [(ngModel)]="form.f_reqby" name="f_reqby" /></div>
+        <div class="field"><label>Payee <span class="required-mark">*</span></label><input type="text" [(ngModel)]="form.f_payee" name="f_payee" /></div>
+        <div class="field"><label>Requested By <span class="required-mark">*</span></label><input type="text" [(ngModel)]="form.f_reqby" name="f_reqby" /></div>
       </div>
     </div>
 
@@ -193,13 +196,7 @@
     <div class="pf-wrap">
       <div class="pf-header">
         <div class="pf-logo-row">
-          <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <circle cx="24" cy="24" r="22" stroke="#000" stroke-width="2" fill="none"></circle>
-            <rect x="21" y="10" width="6" height="28" rx="1" fill="#000"></rect>
-            <rect x="10" y="21" width="28" height="6" rx="1" fill="#000"></rect>
-            <path d="M24 16 C20 12,14 14,12 18 C16 17,20 18,24 22" fill="#000" opacity="0.3"></path>
-            <path d="M24 16 C28 12,34 14,36 18 C32 17,28 18,24 22" fill="#000" opacity="0.3"></path>
-          </svg>
+          <img src="assets/cfc-logo.png" alt="Couples for Christ logo" />
           <div class="pf-orgname">Couples for Christ</div>
         </div>
         <div class="pf-subtitle">Cash Advance / Reimbursement / Liquidation Form</div>
@@ -222,8 +219,11 @@
             <div class="pf-charge-row">
               <span class="pf-cb-item"><span class="pf-cb-box">{{ form.c_evang ? '✓' : '' }}</span> Evangelization</span>
               <span class="pf-cb-item"><span class="pf-cb-box">{{ form.c_form ? '✓' : '' }}</span> Formation</span>
-              <span class="pf-cb-item"><span class="pf-cb-box">{{ form.c_gov ? '✓' : '' }}</span> Governance</span>
+              <span class="pf-cb-item"><span class="pf-cb-box">{{ form.c_church_donation ? '✓' : '' }}</span> Church Donation</span>
               <span class="pf-cb-item"><span class="pf-cb-box">{{ form.c_miss ? '✓' : '' }}</span> Missionary Worker</span>
+              <span class="pf-cb-item"><span class="pf-cb-box">{{ form.c_priest_stipend ? '✓' : '' }}</span> Priest Stipend</span>
+              <span class="pf-cb-item"><span class="pf-cb-box">{{ form.c_bereavement ? '✓' : '' }}</span> Bereavement</span>
+              <span class="pf-cb-item"><span class="pf-cb-box">{{ form.c_natl_remittance ? '✓' : '' }}</span> Nat'l Remittance (Tithes, FFO, ANCOP)</span>
             </div>
           </td>
         </tr>

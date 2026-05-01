@@ -8,6 +8,7 @@ nodejs-api/node_modules/
 # Build outputs
 angular/dist/
 angular/.angular/
+nodejs-api/public/
 
 # Runtime data
 nodejs-api/data/

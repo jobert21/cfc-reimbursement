@@ -1,6 +1,7 @@
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Component, Inject } from '@angular/core';
-import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
+import { MAT_DIALOG_DATA, MatDialog, MatDialogRef } from '@angular/material/dialog';
+import { ConfirmDeleteDialogComponent } from './confirm-delete-dialog.component';
 
 export interface ExpenseItem {
   date: string;
@@ -15,9 +16,13 @@ export interface FormRecord {
   f_purpose: string;
   c_evang: boolean;
   c_form: boolean;
-  c_gov: boolean;
+  c_church_donation: boolean;
   c_miss: boolean;
+  c_priest_stipend: boolean;
+  c_bereavement: boolean;
+  c_natl_remittance: boolean;
   c_other: boolean;
+  c_gov?: boolean;
   f_other_spec: string;
   f_payee: string;
   f_reqby: string;
@@ -56,9 +61,11 @@ export class PayeeSearchDialogComponent {
   loading = false;
   searched = false;
   records: FormRecord[] = [];
+  deletingIds = new Set<string>();
 
   constructor(
     private readonly http: HttpClient,
+    private readonly dialog: MatDialog,
     private readonly dialogRef: MatDialogRef<PayeeSearchDialogComponent, FormRecord | undefined>,
     @Inject(MAT_DIALOG_DATA) public readonly data: DialogData,
   ) {}
@@ -92,5 +99,35 @@ export class PayeeSearchDialogComponent {
 
   selectRecord(record: FormRecord): void {
     this.dialogRef.close(record);
+  }
+
+  deleteRecord(record: FormRecord): void {
+    const recordId = record._id;
+    if (!recordId) {
+      return;
+    }
+
+    const confirmRef = this.dialog.open(ConfirmDeleteDialogComponent, {
+      width: '420px',
+      data: { payee: record.f_payee, requestNumber: record.f_reqno },
+    });
+
+    confirmRef.afterClosed().subscribe((confirmed) => {
+      if (!confirmed) {
+        return;
+      }
+
+      this.deletingIds.add(recordId);
+
+      this.http.delete<{ deleted: boolean }>(`${this.data.apiBaseUrl}/${recordId}`).subscribe({
+        next: () => {
+          this.deletingIds.delete(recordId);
+          this.search();
+        },
+        error: () => {
+          this.deletingIds.delete(recordId);
+        },
+      });
+    });
   }
 }

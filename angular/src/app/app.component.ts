@@ -47,7 +47,17 @@ export class AppComponent {
   }
 
   saveData(): void {
+    const validationError = this.validateRequiredFields();
+    if (validationError) {
+      this.showMessage(validationError);
+      return;
+    }
+
     this.recalc();
+
+    if (!this.form.f_reqno || !this.form.f_reqno.trim()) {
+      this.form.f_reqno = this.generateRequestNumber();
+    }
 
     const base = this.createEmptyForm();
     const payload: FormState = {
@@ -144,8 +154,11 @@ export class AppComponent {
       f_purpose: record.f_purpose ?? base.f_purpose,
       c_evang: Boolean(record.c_evang),
       c_form: Boolean(record.c_form),
-      c_gov: Boolean(record.c_gov),
+      c_church_donation: Boolean(record.c_church_donation ?? record.c_gov),
       c_miss: Boolean(record.c_miss),
+      c_priest_stipend: Boolean(record.c_priest_stipend),
+      c_bereavement: Boolean(record.c_bereavement),
+      c_natl_remittance: Boolean(record.c_natl_remittance),
       c_other: Boolean(record.c_other),
       f_other_spec: record.f_other_spec ?? base.f_other_spec,
       f_payee: record.f_payee ?? base.f_payee,
@@ -186,8 +199,11 @@ export class AppComponent {
       f_purpose: '',
       c_evang: false,
       c_form: false,
-      c_gov: false,
+      c_church_donation: false,
       c_miss: false,
+      c_priest_stipend: false,
+      c_bereavement: false,
+      c_natl_remittance: false,
       c_other: false,
       f_other_spec: '',
       f_payee: '',
@@ -219,5 +235,47 @@ export class AppComponent {
 
   private showMessage(message: string): void {
     this.snackBar.open(message, 'Close', { duration: 2200 });
+  }
+
+  private validateRequiredFields(): string | null {
+    if (!this.form.f_date || !this.form.f_date.trim()) {
+      return 'Date is required.';
+    }
+
+    if (!this.form.f_payee || !this.form.f_payee.trim()) {
+      return 'Payee is required.';
+    }
+
+    if (!this.form.f_reqby || !this.form.f_reqby.trim()) {
+      return 'Requested By is required.';
+    }
+
+    const hasChargeTo = Boolean(
+      this.form.c_evang ||
+      this.form.c_form ||
+      this.form.c_church_donation ||
+      this.form.c_miss ||
+      this.form.c_priest_stipend ||
+      this.form.c_bereavement ||
+      this.form.c_natl_remittance ||
+      this.form.c_other,
+    );
+
+    if (!hasChargeTo) {
+      return 'Charge To is required.';
+    }
+
+    return null;
+  }
+
+  private generateRequestNumber(): string {
+    const now = new Date();
+    const yy = `${now.getFullYear()}`.slice(-2);
+    const mm = `${now.getMonth() + 1}`.padStart(2, '0');
+    const dd = `${now.getDate()}`.padStart(2, '0');
+    const hh = `${now.getHours()}`.padStart(2, '0');
+    const min = `${now.getMinutes()}`.padStart(2, '0');
+
+    return `${yy}${mm}${dd}_${hh}${min}`;
   }
 }

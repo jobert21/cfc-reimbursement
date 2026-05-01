@@ -3,8 +3,7 @@
 <mat-dialog-content>
   <div class="search-row">
     <mat-form-field appearance="outline" class="payee-field">
-      <mat-label>Payee name</mat-label>
-      <input matInput [(ngModel)]="query" (keyup.enter)="search()" />
+      <input matInput placeholder="Payee Name" [(ngModel)]="query" (keyup.enter)="search()" />
     </mat-form-field>
 
     <button mat-raised-button color="primary" (click)="search()">Search</button>
@@ -15,13 +14,25 @@
     <span>Searching...</span>
   </div>
 
-  <mat-list *ngIf="!loading && records.length > 0">
-    <button mat-list-item *ngFor="let record of records" (click)="selectRecord(record)">
-      <span matListItemTitle>{{ record.f_payee || '(No payee)' }}</span>
-      <span matListItemLine>
-        Date: {{ record.f_date || '-' }} | Request #: {{ record.f_reqno || '-' }}
-      </span>
-    </button>
+  <mat-list class="results-list" *ngIf="!loading && records.length > 0">
+    <div class="result-row" *ngFor="let record of records">
+      <button mat-list-item class="select-btn" (click)="selectRecord(record)">
+        <span matListItemTitle class="result-title">{{ record.f_payee || '(No payee)' }}</span>
+        <span matListItemLine>
+          Date: {{ record.f_date || '-' }} | Request #: {{ record.f_reqno || '-' }}
+        </span>
+      </button>
+
+      <button
+        mat-stroked-button
+        color="warn"
+        class="delete-btn"
+        [disabled]="!record._id || deletingIds.has(record._id)"
+        (click)="deleteRecord(record)"
+      >
+        {{ record._id && deletingIds.has(record._id) ? 'Deleting...' : 'Delete' }}
+      </button>
+    </div>
   </mat-list>
 
   <p class="empty" *ngIf="!loading && searched && records.length === 0">No payee records found.</p>

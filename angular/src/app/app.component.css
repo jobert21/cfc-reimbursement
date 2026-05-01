@@ -75,9 +75,10 @@
   margin-bottom: 4px;
 }
 
-.cfc-logo svg {
+.cfc-logo img {
   width: 40px;
   height: 40px;
+  object-fit: contain;
 }
 
 .org-name {
@@ -112,6 +113,11 @@
   margin-bottom: 10px;
   padding-bottom: 4px;
   border-bottom: 2px solid var(--blue-light);
+}
+
+.required-mark {
+  color: #b91c1c;
+  font-weight: 700;
 }
 
 .field-group {
@@ -215,6 +221,10 @@
 .check-label.checked {
   border-color: var(--blue);
   background: var(--blue-light);
+}
+
+.check-label-full {
+  width: 100%;
 }
 
 .others-row {
@@ -454,9 +464,10 @@
   margin-bottom: 2px;
 }
 
-.pf-logo-row svg {
+.pf-logo-row img {
   width: 36px;
   height: 36px;
+  object-fit: contain;
 }
 
 .pf-orgname {
