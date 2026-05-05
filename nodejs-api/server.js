@@ -98,6 +98,49 @@ app.put('/api/forms/:id', (req, res) => {
   });
 });
 
+app.get('/api/forms/list', (req, res) => {
+  const page = parseInt(req.query.page) || 1;
+  const limit = parseInt(req.query.limit) || 10;
+  const skip = (page - 1) * limit;
+
+  const sortBy = typeof req.query.sortBy === 'string' ? req.query.sortBy : 'updatedAt';
+  const sortOrder = req.query.sortOrder === 'asc' ? 1 : -1;
+
+  const rawPayee = typeof req.query.payee === 'string' ? req.query.payee.trim() : '';
+  const filter = rawPayee
+    ? { f_payee: new RegExp(rawPayee.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'i') }
+    : {};
+
+  db.find(filter)
+    .sort({ [sortBy]: sortOrder })
+    .skip(skip)
+    .limit(limit)
+    .exec((err, docs) => {
+      if (err) {
+        res.status(500).json({ message: 'Failed to list forms.' });
+        return;
+      }
+
+      db.count(filter, (countErr, count) => {
+        if (countErr) {
+          res.status(500).json({ message: 'Failed to count forms.' });
+          return;
+        }
+        res.json({ docs, count });
+      });
+    });
+});
+
+app.get('/api/forms/count', (_req, res) => {
+  db.count({}, (err, count) => {
+    if (err) {
+      res.status(500).json({ message: 'Failed to count forms.' });
+      return;
+    }
+    res.json({ count });
+  });
+});
+
 app.get('/api/forms/search', (req, res) => {
   const rawPayee = typeof req.query.payee === 'string' ? req.query.payee.trim() : '';
   const filter = rawPayee

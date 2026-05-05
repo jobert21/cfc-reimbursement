@@ -1,0 +1,54 @@
+.search-row {
+  display: flex;
+  gap: 10px;
+  padding-top: 5px;
+}
+
+.search-row button {
+  height: 56px;
+}
+
+.search-field {
+  flex: 1;
+}
+
+.loading-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+.reimb-table {
+  width: 100%;
+}
+
+.reimb-table th {
+  font-weight: 700;
+  background: #f5f5f5;
+}
+
+.reimb-table td {
+  font-size: 13px;
+}
+
+.clickable-row {
+  cursor: pointer;
+}
+
+.clickable-row:hover {
+  background: #f0f4ff;
+}
+
+.empty {
+  margin: 20px 0;
+  color: #666;
+  text-align: center;
+}
+
+@media (max-width: 600px) {
+  .reimb-table {
+    display: block;
+    overflow-x: auto;
+  }
+}

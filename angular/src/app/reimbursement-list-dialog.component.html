@@ -1,0 +1,75 @@
+<h2 mat-dialog-title>Reimbursement List</h2>
+
+<mat-dialog-content>
+  <div class="search-row">
+    <mat-form-field appearance="outline" class="search-field" density="compact" floatLabel="always">
+      <mat-label>Search by Payee</mat-label>
+      <input matInput [(ngModel)]="searchPayee" (keyup.enter)="search()" />
+    </mat-form-field>
+    <button mat-raised-button color="primary" (click)="search()">Search</button>
+    <button mat-stroked-button (click)="clearSearch()">Clear</button>
+  </div>
+
+  <div class="loading-row" *ngIf="loading">
+    <mat-spinner diameter="32"></mat-spinner>
+    <span>Loading...</span>
+  </div>
+
+  <table mat-table [dataSource]="dataSource" class="reimb-table" *ngIf="!loading" matSort>
+    <ng-container matColumnDef="f_reqno">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>Request #</th>
+      <td mat-cell *matCellDef="let row">{{ row.f_reqno || '-' }}</td>
+    </ng-container>
+
+    <ng-container matColumnDef="f_date">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>Date</th>
+      <td mat-cell *matCellDef="let row">{{ row.f_date || '-' }}</td>
+    </ng-container>
+
+    <ng-container matColumnDef="f_payee">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>Payee</th>
+      <td mat-cell *matCellDef="let row">{{ row.f_payee || '-' }}</td>
+    </ng-container>
+
+    <ng-container matColumnDef="f_reqby">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>Requested By</th>
+      <td mat-cell *matCellDef="let row">{{ row.f_reqby || '-' }}</td>
+    </ng-container>
+
+    <ng-container matColumnDef="total_expenses">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>Total</th>
+      <td mat-cell *matCellDef="let row">{{ row.total_expenses | currency }}</td>
+    </ng-container>
+
+    <ng-container matColumnDef="amount_due">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>Due</th>
+      <td mat-cell *matCellDef="let row">{{ row.amount_due | currency }}</td>
+    </ng-container>
+
+    <ng-container matColumnDef="actions">
+      <th mat-header-cell *matHeaderCellDef></th>
+      <td mat-cell *matCellDef="let row">
+        <button mat-icon-button color="warn" [disabled]="deletingIds.has(row._id)" (click)="deleteRecord(row)">
+          <mat-icon>delete</mat-icon>
+        </button>
+      </td>
+    </ng-container>
+
+    <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+    <tr mat-row *matRowDef="let row; columns: displayedColumns;" (click)="selectRecord(row)" class="clickable-row"></tr>
+  </table>
+
+  <mat-paginator
+    [length]="totalCount"
+    [pageSize]="pageSize"
+    [pageIndex]="pageIndex"
+    [pageSizeOptions]="[5, 10, 25, 50]"
+    (page)="onPageChange($event)"
+  ></mat-paginator>
+
+  <p class="empty" *ngIf="!loading && totalCount === 0">No records found.</p>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button mat-button mat-dialog-close>Close</button>
+</mat-dialog-actions>

@@ -10,18 +10,24 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
 import { MatDialogModule } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatListModule } from '@angular/material/list';
+import { MatPaginatorModule } from '@angular/material/paginator';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
+import { MatTableModule } from '@angular/material/table';
+import { MatToolbarModule } from '@angular/material/toolbar';
 import { PayeeSearchDialogComponent } from './payee-search-dialog.component';
 import { ConfirmDeleteDialogComponent } from './confirm-delete-dialog.component';
+import { ReimbursementListDialogComponent } from './reimbursement-list-dialog.component';
 
 @NgModule({
   declarations: [
     AppComponent,
     PayeeSearchDialogComponent,
-    ConfirmDeleteDialogComponent
+    ConfirmDeleteDialogComponent,
+    ReimbursementListDialogComponent
   ],
   imports: [
     BrowserModule,
@@ -33,10 +39,14 @@ import { ConfirmDeleteDialogComponent } from './confirm-delete-dialog.component'
     MatCardModule,
     MatDialogModule,
     MatFormFieldModule,
+    MatIconModule,
     MatInputModule,
     MatListModule,
+    MatPaginatorModule,
     MatProgressSpinnerModule,
-    MatSnackBarModule
+    MatSnackBarModule,
+    MatTableModule,
+    MatToolbarModule
   ],
   providers: [],
   bootstrap: [AppComponent]

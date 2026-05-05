@@ -4,6 +4,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { FormRecord } from './payee-search-dialog.component';
 import { PayeeSearchDialogComponent } from './payee-search-dialog.component';
+import { ReimbursementListDialogComponent, ReimbursementRecord } from './reimbursement-list-dialog.component';
 
 interface FormState extends Omit<FormRecord, '_id'> {}
 
@@ -113,6 +114,22 @@ export class AppComponent {
     this.form = this.createEmptyForm();
     this.currentRecordId = null;
     this.recalc();
+  }
+
+  openList(): void {
+    const dialogRef = this.dialog.open(ReimbursementListDialogComponent, {
+      width: '900px',
+      maxHeight: '80vh',
+      data: { apiBaseUrl: this.apiBaseUrl },
+    });
+
+    dialogRef.afterClosed().subscribe((record) => {
+      if (!record) {
+        return;
+      }
+      this.populateForm(record);
+      this.showMessage('Record loaded.');
+    });
   }
 
   addItem(): void {
