@@ -16,6 +16,7 @@ import { MatListModule } from '@angular/material/list';
 import { MatPaginatorModule } from '@angular/material/paginator';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
+import { MatSortModule } from '@angular/material/sort';
 import { MatTableModule } from '@angular/material/table';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { PayeeSearchDialogComponent } from './payee-search-dialog.component';
@@ -45,6 +46,7 @@ import { ReimbursementListDialogComponent } from './reimbursement-list-dialog.co
     MatPaginatorModule,
     MatProgressSpinnerModule,
     MatSnackBarModule,
+    MatSortModule,
     MatTableModule,
     MatToolbarModule
   ],

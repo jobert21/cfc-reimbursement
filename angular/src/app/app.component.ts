@@ -1,8 +1,8 @@
 import { HttpClient } from '@angular/common/http';
-import { Component } from '@angular/core';
+import { Component, ElementRef, ViewChild } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { FormRecord } from './payee-search-dialog.component';
+import { AttachmentRecord, FormRecord } from './payee-search-dialog.component';
 import { PayeeSearchDialogComponent } from './payee-search-dialog.component';
 import { ReimbursementListDialogComponent, ReimbursementRecord } from './reimbursement-list-dialog.component';
 
@@ -19,6 +19,9 @@ export class AppComponent {
   totalExpenses = '0.00';
   amountDue = '0.00';
   currentRecordId: string | null = null;
+  selectedFiles: File[] = [];
+  attachments: AttachmentRecord[] = [];
+  @ViewChild('fileInput') fileInputRef?: ElementRef<HTMLInputElement>;
 
   get itemCountLabel(): string {
     return this.form.items.length === 1 ? '1 item' : `${this.form.items.length} items`;
@@ -80,11 +83,54 @@ export class AppComponent {
 
     request.subscribe({
       next: (savedRecord) => {
+        this.form.f_reqno = savedRecord.f_reqno || this.form.f_reqno;
         this.currentRecordId = savedRecord._id ?? this.currentRecordId;
-        this.showMessage(isUpdate ? 'Form updated.' : 'Form saved.');
+        this.attachments = Array.isArray(savedRecord.attachments) ? savedRecord.attachments : [];
+
+        if (!this.currentRecordId || this.selectedFiles.length === 0) {
+          this.showMessage(isUpdate ? 'Form updated.' : 'Form saved.');
+          return;
+        }
+
+        this.uploadAttachments(this.currentRecordId, this.form.f_reqno, isUpdate);
       },
       error: () => this.showMessage('Failed to save form.'),
     });
+  }
+
+  onFileSelected(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    const incomingFiles = input.files ? Array.from(input.files) : [];
+    const mergedFiles = [...this.selectedFiles, ...incomingFiles];
+
+    this.selectedFiles = mergedFiles.filter((file, index, allFiles) => {
+      return allFiles.findIndex((candidate) => (
+        candidate.name === file.name &&
+        candidate.size === file.size &&
+        candidate.lastModified === file.lastModified
+      )) === index;
+    });
+
+    input.value = '';
+  }
+
+  clearSelectedFiles(fileInput: HTMLInputElement): void {
+    this.selectedFiles = [];
+    fileInput.value = '';
+  }
+
+  removeSelectedFile(index: number): void {
+    if (index < 0 || index >= this.selectedFiles.length) {
+      return;
+    }
+    this.selectedFiles = this.selectedFiles.filter((_, currentIndex) => currentIndex !== index);
+  }
+
+  getDownloadUrl(attachmentId: string): string {
+    if (!this.currentRecordId) {
+      return '#';
+    }
+    return `${this.apiBaseUrl}/${this.currentRecordId}/attachments/${attachmentId}/download`;
   }
 
   loadData(): void {
@@ -113,6 +159,11 @@ export class AppComponent {
   clearForm(): void {
     this.form = this.createEmptyForm();
     this.currentRecordId = null;
+    this.selectedFiles = [];
+    this.attachments = [];
+    if (this.fileInputRef?.nativeElement) {
+      this.fileInputRef.nativeElement.value = '';
+    }
     this.recalc();
   }
 
@@ -205,6 +256,8 @@ export class AppComponent {
     };
 
     this.currentRecordId = record._id ?? null;
+    this.attachments = Array.isArray(record.attachments) ? record.attachments : [];
+    this.selectedFiles = [];
 
     this.recalc();
   }
@@ -294,5 +347,30 @@ export class AppComponent {
     const min = `${now.getMinutes()}`.padStart(2, '0');
 
     return `${yy}${mm}${dd}_${hh}${min}`;
+  }
+
+  private uploadAttachments(recordId: string, requestNumber: string, isUpdate: boolean): void {
+    const formData = new FormData();
+
+    this.selectedFiles.forEach((file) => {
+      formData.append('files', file, file.name);
+    });
+
+    if (requestNumber) {
+      formData.append('requestNumber', requestNumber);
+    }
+
+    this.http
+      .post<{ attachments: AttachmentRecord[] }>(`${this.apiBaseUrl}/${recordId}/attachments`, formData)
+      .subscribe({
+        next: (response) => {
+          this.attachments = Array.isArray(response.attachments) ? response.attachments : [];
+          this.selectedFiles = [];
+          this.showMessage(isUpdate ? 'Form updated with attachment(s).' : 'Form saved with attachment(s).');
+        },
+        error: () => {
+          this.showMessage('Form saved, but failed to upload attachment(s).');
+        },
+      });
   }
 }

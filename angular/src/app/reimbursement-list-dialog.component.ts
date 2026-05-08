@@ -1,8 +1,8 @@
 import { HttpClient, HttpParams } from '@angular/common/http';
-import { Component, Inject, OnInit, ViewChild, AfterViewInit } from '@angular/core';
+import { Component, Inject, OnInit, ViewChild } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { MatPaginator } from '@angular/material/paginator';
-import { MatSort, Sort } from '@angular/material/sort';
+import { Sort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
 
 export interface ReimbursementRecord {
@@ -14,6 +14,7 @@ export interface ReimbursementRecord {
   total_expenses: string;
   amount_due: string;
   updatedAt: string;
+  attachments?: Array<{ id: string }>;
 }
 
 interface DialogData {
@@ -25,8 +26,8 @@ interface DialogData {
   templateUrl: './reimbursement-list-dialog.component.html',
   styleUrls: ['./reimbursement-list-dialog.component.css'],
 })
-export class ReimbursementListDialogComponent implements OnInit, AfterViewInit {
-  displayedColumns: string[] = ['f_reqno', 'f_date', 'f_payee', 'f_reqby', 'total_expenses', 'amount_due', 'actions'];
+export class ReimbursementListDialogComponent implements OnInit {
+  displayedColumns: string[] = ['f_reqno', 'f_date', 'f_payee', 'f_reqby', 'total_expenses', 'amount_due', 'files', 'actions'];
   dataSource = new MatTableDataSource<ReimbursementRecord>([]);
 
   searchPayee = '';
@@ -41,7 +42,6 @@ export class ReimbursementListDialogComponent implements OnInit, AfterViewInit {
   deletingIds = new Set<string>();
 
   @ViewChild(MatPaginator) paginator!: MatPaginator;
-  @ViewChild(MatSort) sort!: MatSort;
 
   constructor(
     private readonly http: HttpClient,
@@ -53,13 +53,11 @@ export class ReimbursementListDialogComponent implements OnInit, AfterViewInit {
     this.loadData();
   }
 
-  ngAfterViewInit(): void {
-    this.sort.sortChange.subscribe((sortEvent: Sort) => {
-      this.sortColumn = sortEvent.active || 'updatedAt';
-      this.sortDirection = sortEvent.direction || 'desc';
-      this.pageIndex = 0;
-      this.loadData();
-    });
+  onSortChange(sortEvent: Sort): void {
+    this.sortColumn = sortEvent.active || 'updatedAt';
+    this.sortDirection = sortEvent.direction || 'desc';
+    this.pageIndex = 0;
+    this.loadData();
   }
 
   search(): void {
@@ -106,7 +104,9 @@ export class ReimbursementListDialogComponent implements OnInit, AfterViewInit {
     this.loadData();
   }
 
-  deleteRecord(record: ReimbursementRecord): void {
+  deleteRecord(record: ReimbursementRecord, event?: Event): void {
+    event?.stopPropagation();
+
     if (!confirm(`Delete record ${record.f_reqno || record.f_payee}?`)) {
       return;
     }

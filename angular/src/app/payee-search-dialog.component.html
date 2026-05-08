@@ -28,7 +28,7 @@
         color="warn"
         class="delete-btn"
         [disabled]="!record._id || deletingIds.has(record._id)"
-        (click)="deleteRecord(record)"
+        (click)="deleteRecord(record, $event)"
       >
         {{ record._id && deletingIds.has(record._id) ? 'Deleting...' : 'Delete' }}
       </button>

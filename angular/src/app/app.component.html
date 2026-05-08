@@ -134,6 +134,41 @@
         <button type="button" class="btn-remove-item" (click)="removeItem()" [disabled]="form.items.length <= 1">- Remove Last</button>
         <span class="item-count-badge">{{ itemCountLabel }}</span>
       </div>
+
+      <div class="upload-block">
+        <label class="upload-label" for="attachments">Upload file(s)</label>
+        <input
+          #fileInput
+          id="attachments"
+          type="file"
+          multiple
+          (change)="onFileSelected($event)"
+        />
+        <div class="upload-selected" *ngIf="selectedFiles.length > 0">
+          {{ selectedFiles.length }} file(s) selected.
+          <button type="button" class="btn-clear-files" (click)="clearSelectedFiles(fileInput)">Clear</button>
+        </div>
+        <div class="selected-files-list" *ngIf="selectedFiles.length > 0">
+          <div class="selected-file-row" *ngFor="let file of selectedFiles; let i = index">
+            <span class="selected-file-name">{{ file.name }}</span>
+            <button type="button" class="btn-remove-selected-file" (click)="removeSelectedFile(i)">Remove</button>
+          </div>
+        </div>
+        <div class="upload-hint">Select one or more files to upload. Files are stored under the request number folder when you save.</div>
+      </div>
+
+      <div class="attachments-list" *ngIf="attachments.length > 0">
+        <div class="attachments-title">Uploaded file(s)</div>
+        <a
+          class="attachment-link"
+          *ngFor="let attachment of attachments"
+          [href]="getDownloadUrl(attachment.id)"
+          target="_blank"
+          rel="noopener"
+        >
+          {{ attachment.originalName }}
+        </a>
+      </div>
     </div>
 
     <div class="section">

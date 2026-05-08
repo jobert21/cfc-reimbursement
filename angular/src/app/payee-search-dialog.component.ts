@@ -44,6 +44,16 @@ export interface FormRecord {
   items: ExpenseItem[];
   total_expenses: string;
   amount_due: string;
+  attachments?: AttachmentRecord[];
+}
+
+export interface AttachmentRecord {
+  id: string;
+  originalName: string;
+  storedName: string;
+  mimeType: string;
+  size: number;
+  uploadedAt: string;
 }
 
 interface DialogData {
@@ -101,12 +111,13 @@ export class PayeeSearchDialogComponent {
     this.dialogRef.close(record);
   }
 
-  deleteRecord(record: FormRecord): void {
+  deleteRecord(record: FormRecord, ev?: Event): void {
+    ev?.stopPropagation();
+
     const recordId = record._id;
     if (!recordId) {
       return;
     }
-
     const confirmRef = this.dialog.open(ConfirmDeleteDialogComponent, {
       width: '420px',
       data: { payee: record.f_payee, requestNumber: record.f_reqno },
@@ -116,7 +127,6 @@ export class PayeeSearchDialogComponent {
       if (!confirmed) {
         return;
       }
-
       this.deletingIds.add(recordId);
 
       this.http.delete<{ deleted: boolean }>(`${this.data.apiBaseUrl}/${recordId}`).subscribe({
